@@ -3,6 +3,14 @@
 
 bin_PROGRAMS = eu-tire-label
 
+BUILT_SOURCES = \
+	label-template.h
+
 eu_tire_label_SOURCES = \
 	label.c \
 	main.c
+
+label-template.h: $(srcdir)/label.svg
+	echo -n 'const char label_template[] = "' >$@
+	sed -e 's/"/\\"/g' $< |tr -d '\t\n' >>$@
+	echo '";' >>$@
