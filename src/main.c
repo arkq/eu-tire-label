@@ -8,9 +8,14 @@
  *
  */
 
+#if HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "label.h"
 
@@ -75,6 +80,52 @@ return_usage:
 		/* this program does not take any arguments */
 		goto return_usage;
 
+#if ENABLE_CGI
+	/* detect whatever we are in the CGI environment, and if not, proceed
+	 * as a normal console-based application */
+	int cgi = 0;
+	const char *tmp;
+	if ((tmp = getenv("REQUEST_METHOD")) != NULL) {
+		cgi = 1;
+
+		/* handle GET requests only */
+		if (strcmp(tmp, "GET") != 0)
+			return EXIT_FAILURE;
+
+		if ((tmp = getenv("QUERY_STRING")) != NULL) {
+
+			char *query;
+			if ((query = strdup(tmp)) == NULL) {
+				perror("error: duplicate query string");
+				return EXIT_FAILURE;
+			}
+
+			char *str = query;
+			char *token;
+
+			/* dissect and parse query string */
+			while ((token = strtok(str, "&")) != NULL) {
+				str = NULL;
+
+				if (strstr(token, "C=") == token)
+					label_data.tire_class = parse_tire_class(&token[2]);
+				else if (strstr(token, "F=") == token)
+					label_data.fuel_efficiency = parse_fuel_efficiency_class(&token[2]);
+				else if (strstr(token, "G=") == token)
+					label_data.wet_grip = parse_wet_grip_class(&token[2]);
+				else if (strstr(token, "R=") == token)
+					label_data.rolling_noise = parse_rolling_noise_class(&token[2]);
+				else if (strstr(token, "N=") == token)
+					label_data.rolling_noise_db = parse_rolling_noise_db(&token[2]);
+
+			}
+
+			free(query);
+		}
+
+	}
+#endif /* ENABLE_CGI */
+
 	if (label_data.tire_class == TC_ERROR) {
 		fprintf(stderr, "error: tire class option is required\n");
 		return EXIT_FAILURE;
@@ -84,6 +135,14 @@ return_usage:
 		perror("error: create label");
 		return EXIT_FAILURE;
 	}
+
+#if ENABLE_CGI
+	if (cgi) {
+		fprintf(stdout, "Content-Type: image/svg+xml\r\n");
+		fprintf(stdout, "Content-Length: %zu\r\n", strlen(label_svg_image));
+		fprintf(stdout, "\r\n");
+	}
+#endif /* ENABLE_CGI */
 
 	/* dump created label to the standard output */
 	fprintf(stdout, "%s\n", label_svg_image);

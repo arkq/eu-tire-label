@@ -16,7 +16,7 @@ Installation
 
 	$ autoreconf --install
 	$ mkdir build && cd build
-	$ ../configure
+	$ ../configure --enable-cgi
 	$ make && make install
 
 Usage
