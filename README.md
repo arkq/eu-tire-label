@@ -21,3 +21,13 @@ Installation
 
 Usage
 -----
+
+As a standalone executable:
+
+	$ eu-tire-label --tire-class=1 --fuel-efficiency=B --wet-grip=E \
+	  --rolling-noise=2 --rolling-noise-db=72 >tire-label-1-B-E-2-72.svg
+
+As a CGI application using e.g. Apache HTTP server. Note, that the query string is case
+insensitive.
+
+	wget "http://localhost/cgi-bin/eu-tire-label?c=1&f=b&g=e&r=2&n=72"
