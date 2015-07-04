@@ -100,6 +100,11 @@ return_usage:
 				return EXIT_FAILURE;
 			}
 
+			/* make query string case-insensitive */
+			char *ptr = query;
+			while ((*ptr = toupper(*ptr)) != '\0')
+				ptr++;
+
 			char *str = query;
 			char *token;
 
