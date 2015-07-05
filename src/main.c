@@ -89,8 +89,10 @@ return_usage:
 		cgi = 1;
 
 		/* handle GET requests only */
-		if (strcmp(tmp, "GET") != 0)
+		if (strcmp(tmp, "GET") != 0) {
+			fprintf(stdout, "Status: 405 Method Not Allowed\r\n\r\n");
 			return EXIT_FAILURE;
+		}
 
 		if ((tmp = getenv("QUERY_STRING")) != NULL) {
 
@@ -133,6 +135,10 @@ return_usage:
 
 	if (label_data.tire_class == TC_ERROR) {
 		fprintf(stderr, "error: tire class option is required\n");
+#if ENABLE_CGI
+		if (cgi)
+			fprintf(stdout, "Status: 400 Bad Request\r\n\r\n");
+#endif /* ENABLE_CGI */
 		return EXIT_FAILURE;
 	}
 
@@ -143,6 +149,7 @@ return_usage:
 
 #if ENABLE_CGI
 	if (cgi) {
+		fprintf(stdout, "Status: 200 OK\r\n");
 		fprintf(stdout, "Content-Type: image/svg+xml\r\n");
 		fprintf(stdout, "Content-Length: %zu\r\n", strlen(label_svg_image));
 		fprintf(stdout, "\r\n");
