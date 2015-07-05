@@ -18,6 +18,47 @@
 #include <string.h>
 
 #include "label.h"
+#if ENABLE_RSVG
+#include "raster.h"
+#endif
+
+
+enum output_format {
+	FORMAT_SVG = 0,
+	FORMAT_PNG,
+};
+
+
+/* Parse label dimensions according to the WIDTH[xHEIGHT] format. If parsing
+ * fails passed variables are not modified. */
+void parse_label_dimensions(const char *str, int *width, int *height) {
+
+	int w = 0, h = 0;
+	char *ptr, *tmp;
+
+	if ((tmp = strdup(str)) == NULL)
+		return;
+
+	ptr = tmp;
+	while ((*ptr = tolower(*ptr)) != '\0')
+		ptr++;
+
+	if ((ptr = strchr(tmp, 'x')) != NULL) {
+		*ptr = '\0';
+		ptr++;
+	}
+
+	w = atoi(tmp);
+	if (ptr)
+		h = atoi(ptr);
+
+	if (w)
+		*width = w;
+	if (h)
+		*height = h;
+
+	free(tmp);
+}
 
 
 int main(int argc, char **argv) {
@@ -26,6 +67,10 @@ int main(int argc, char **argv) {
 	const char *opts = "hC:F:G:R:N:";
 	struct option longopts[] = {
 		{ "help", no_argument, NULL, 'h' },
+		{ "output-svg", no_argument, NULL, 's' },
+#if ENABLE_RSVG
+		{ "output-png", required_argument, NULL, 'p' },
+#endif
 		{ "tire-class", required_argument, NULL, 'C' },
 		{ "fuel-efficiency", required_argument, NULL, 'F' },
 		{ "wet-grip", required_argument, NULL, 'G' },
@@ -35,7 +80,12 @@ int main(int argc, char **argv) {
 	};
 
 	struct eu_tire_label label_data = { 0 };
+	enum output_format label_format = FORMAT_SVG;
 	char *label_svg_image = NULL;
+
+	/* label dimensions used for rasterisation */
+	int label_width = -1;
+	int label_height = -1;
 
 	/* parse options */
 	while ((opt = getopt_long(argc, argv, opts, longopts, NULL)) != -1)
@@ -44,6 +94,10 @@ int main(int argc, char **argv) {
 return_usage:
 			printf("usage: %s [options]\n"
 					"options:\n"
+#if ENABLE_RSVG
+					"  --output-svg                 return label in the SVG format (default)\n"
+					"  --output-png=WIDTH[xHEIGHT]  return label in the PNG format\n"
+#endif /* ENABLE_RSVG */
 					"  -C, --tire-class=CLASS       tire class value; one of: 1, 2 or 3\n"
 					"  -F, --fuel-efficiency=CLASS  fuel efficiency class in the numerical or\n"
 					"                               letter format; allowed values: 1-7 or A-G\n"
@@ -54,6 +108,14 @@ return_usage:
 					"  -N, --rolling-noise-db=DB    external rolling noise value expressed in dB\n",
 					argv[0]);
 			return EXIT_SUCCESS;
+
+		case 's':
+			label_format = FORMAT_SVG;
+			break;
+		case 'p':
+			label_format = FORMAT_PNG;
+			parse_label_dimensions(optarg, &label_width, &label_height);
+			break;
 
 		case 'C':
 			label_data.tire_class = parse_tire_class(optarg);
@@ -114,6 +176,13 @@ return_usage:
 			while ((token = strtok(str, "&")) != NULL) {
 				str = NULL;
 
+#if ENABLE_RSVG
+				if (strstr(token, "PNG=") == token) {
+					label_format = FORMAT_PNG;
+					parse_label_dimensions(&token[4], &label_width, &label_height);
+				}
+#endif /* ENABLE_RSVG */
+
 				if (strstr(token, "C=") == token)
 					label_data.tire_class = parse_tire_class(&token[2]);
 				else if (strstr(token, "F=") == token)
@@ -147,18 +216,48 @@ return_usage:
 		return EXIT_FAILURE;
 	}
 
+#if ENABLE_RSVG
+	struct raster_png *png;
+	if ((png = raster_svg_to_png(label_svg_image, label_width, label_height)) == NULL) {
+		perror("error: raster label to PNG");
+		return EXIT_FAILURE;
+	}
+#endif /* ENABLE_RSVG */
+
 #if ENABLE_CGI
 	if (cgi) {
 		fprintf(stdout, "Status: 200 OK\r\n");
-		fprintf(stdout, "Content-Type: image/svg+xml\r\n");
-		fprintf(stdout, "Content-Length: %zu\r\n", strlen(label_svg_image));
+		switch (label_format) {
+		case FORMAT_SVG:
+			fprintf(stdout, "Content-Type: image/svg+xml\r\n");
+			fprintf(stdout, "Content-Length: %zu\r\n", strlen(label_svg_image));
+			break;
+#if ENABLE_RSVG
+		case FORMAT_PNG:
+			fprintf(stdout, "Content-Type: image/png\r\n");
+			fprintf(stdout, "Content-Length: %zu\r\n", png->length);
+			break;
+#endif /* ENABLE_RSVG */
+		}
 		fprintf(stdout, "\r\n");
 	}
 #endif /* ENABLE_CGI */
 
 	/* dump created label to the standard output */
-	fprintf(stdout, "%s\n", label_svg_image);
+	switch (label_format) {
+	case FORMAT_SVG:
+		fprintf(stdout, "%s\n", label_svg_image);
+		break;
+#if ENABLE_RSVG
+	case FORMAT_PNG:
+		fwrite(png->data, png->length, 1, stdout);
+		break;
+#endif /* ENABLE_RSVG */
+	}
 
+#if ENABLE_RSVG
+	raster_png_free(png);
+#endif
 	free(label_svg_image);
 	return EXIT_SUCCESS;
 }
