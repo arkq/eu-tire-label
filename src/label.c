@@ -67,7 +67,7 @@ char *create_label(const struct eu_tire_label *label) {
 
 	const char *classes[] = { NULL, "C1", "C2", "C3" };
 	const char *letters[] = { NULL, "A", "B", "C", "D", "E", "F", "G" };
-	const char *y[] = { NULL, "0", "0", "0", "0", "0", "0", "0" };
+	const char *y[] = { NULL, "24.375", "29.875", "35.375", "40.875", "46.375", "51.875", "58.375" };
 	char *image;
 
 	image = strrep(label_template, "[TIRE-CLASS]", classes[label->tire_class]);
