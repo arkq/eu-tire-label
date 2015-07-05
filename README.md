@@ -16,8 +16,12 @@ Installation
 
 	$ autoreconf --install
 	$ mkdir build && cd build
-	$ ../configure --enable-cgi
+	$ ../configure --enable-cgi --enable-rsvg
 	$ make && make install
+
+Libraries required for PNG output (`--enable-rsvg`):
+* [cairo](http://cairographics.org/) compiled with SVG and PNG support
+* [librsvg](https://wiki.gnome.org/Projects/LibRsvg)
 
 Usage
 -----
@@ -25,9 +29,12 @@ Usage
 As a standalone executable:
 
 	$ eu-tire-label --tire-class=1 --fuel-efficiency=B --wet-grip=E \
-	  --rolling-noise=2 --rolling-noise-db=72 >tire-label-1-B-E-2-72.svg
+	    --rolling-noise=2 --rolling-noise-db=72 >tire-label-1-B-E-2-72.svg
+	$ eu-tire-label --tire-class=1 --fuel-efficiency=B --wet-grip=E \
+		  --rolling-noise=2 --rolling-noise-db=72 --output-png=350 >tire-label-1-B-E-2-72.png
 
-As a CGI application using e.g. Apache HTTP server. Note, that the query string is case
-insensitive.
+As a CGI application using e.g. Apache HTTP server. Note, that for convenience the query string is
+case insensitive.
 
 	wget "http://localhost/cgi-bin/eu-tire-label?c=1&f=b&g=e&r=2&n=72"
+	wget "http://localhost/cgi-bin/eu-tire-label?c=1&f=b&g=e&r=2&n=72&png=350"
