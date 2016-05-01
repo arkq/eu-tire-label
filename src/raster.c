@@ -43,7 +43,7 @@ static cairo_status_t _png_write_callback(void *closure,
  * -1, then original aspect ratio is preserved and image is resized according
  * to the width parameter. Upon failure this function returns NULL. */
 struct raster_png *raster_svg_to_png(const char *svg,
-		unsigned int width, unsigned int height) {
+		int width, int height) {
 
 	RsvgHandle *rsvg;
 	RsvgDimensionData dimension;
@@ -55,7 +55,8 @@ struct raster_png *raster_svg_to_png(const char *svg,
 	if ((png = calloc(1, sizeof(*png))) == NULL)
 		return NULL;
 
-	if ((rsvg = rsvg_handle_new_from_data(svg, strlen(svg), NULL)) == NULL) {
+	if ((rsvg = rsvg_handle_new_from_data((const unsigned char *)svg,
+					strlen(svg), NULL)) == NULL) {
 		raster_png_free(png);
 		return NULL;
 	}

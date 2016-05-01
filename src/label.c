@@ -24,7 +24,6 @@
 static char *strrep(const char *data, const char *src, const char *dst) {
 
 	char *newdata = strdup(data);
-	char *olddata = NULL;
 	char *tok = NULL;
 
 	size_t srclen = strlen(src);
@@ -89,13 +88,16 @@ char *create_label(const struct eu_tire_label *label) {
 	switch (label->rolling_noise) {
 	case RNC_3:
 		image = strrep_x(image, "[ROLLING-NOISE-3-DISPLAY]", "none");
+		/* fall-through */
 	case RNC_2:
 		image = strrep_x(image, "[ROLLING-NOISE-2-DISPLAY]", "none");
+		/* fall-through */
 	case RNC_1:
 		image = strrep_x(image, "[ROLLING-NOISE-1-DISPLAY]", "none");
 		break;
 	case RNC_NONE:
 		image = strrep_x(image, "[ROLLING-NOISE-DISPLAY]", "none");
+		break;
 	}
 	image = strrep_x(image, "[ROLLING-NOISE-DISPLAY]", "");
 	image = strrep_x(image, "[ROLLING-NOISE-1-DISPLAY]", "");
