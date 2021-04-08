@@ -1,8 +1,8 @@
 /*
  * EU-tire-label - label.c
- * Copyright (c) 2015 Arkadiusz Bokowy
+ * Copyright (c) 2015-2021 Arkadiusz Bokowy
  *
- * This file is a part of an EU-tire-label.
+ * This file is a part of EU-tire-label.
  *
  * This project is licensed under the terms of the MIT license.
  *
@@ -17,7 +17,6 @@
 
 /* auto-generated label SVG template */
 #include "label-template.h"
-
 
 /* Replace every occurrence of src in the data with dst. Memory for the new
  * string is obtained with malloc(3), and can be freed with free(3). */

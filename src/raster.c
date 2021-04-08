@@ -1,8 +1,8 @@
 /*
  * EU-tire-label - raster.c
- * Copyright (c) 2015 Arkadiusz Bokowy
+ * Copyright (c) 2015-2021 Arkadiusz Bokowy
  *
- * This file is a part of an EU-tire-label.
+ * This file is a part of EU-tire-label.
  *
  * This project is licensed under the terms of the MIT license.
  *
@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <librsvg/rsvg.h>
 
+#include <librsvg/rsvg.h>
 
 /* Write PNG data into our raster structure. Note, that passed structure
  * should be initialized to 0, otherwise new data will be appended to end

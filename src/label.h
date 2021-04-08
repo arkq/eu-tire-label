@@ -1,8 +1,8 @@
 /*
  * EU-tire-label - label.h
- * Copyright (c) 2015 Arkadiusz Bokowy
+ * Copyright (c) 2015-2021 Arkadiusz Bokowy
  *
- * This file is a part of an EU-tire-label.
+ * This file is a part of EU-tire-label.
  *
  * This project is licensed under the terms of the MIT license.
  *
