@@ -75,19 +75,18 @@ int main(int argc, char **argv) {
 		{ 0, 0, 0, 0 },
 	};
 
-	struct eu_tire_label label_data = { 0 };
-	enum output_format label_format = FORMAT_SVG;
-	char *label_svg_image = NULL;
-
-	/* label dimensions used for rasterisation */
-	int label_width = -1;
-	int label_height = -1;
+	struct eu_tire_label data = { 0 };
+	enum output_format format = FORMAT_SVG;
+	char *label = NULL;
+	/* dimensions used for PNG output */
+	int width = -1;
+	int height = -1;
 
 	/* parse options */
 	while ((opt = getopt_long(argc, argv, opts, longopts, NULL)) != -1)
 		switch (opt) {
-		case 'h':
-return_usage:
+		case 'h' /* --help */:
+usage:
 			printf("Usage:\n"
 					"  %s [OPTION]...\n"
 					"\nOptions:\n"
@@ -108,32 +107,32 @@ return_usage:
 					argv[0]);
 			return EXIT_SUCCESS;
 
-		case 'V':
+		case 'V' /* --version */:
 			printf(VERSION "\n");
 			return EXIT_SUCCESS;
 
-		case 's':
-			label_format = FORMAT_SVG;
+		case 's' /* --output-svg */:
+			format = FORMAT_SVG;
 			break;
-		case 'p':
-			label_format = FORMAT_PNG;
-			parse_label_dimensions(optarg, &label_width, &label_height);
+		case 'p' /* --output-png=WIDTH[xHEIGHT] */:
+			format = FORMAT_PNG;
+			parse_label_dimensions(optarg, &width, &height);
 			break;
 
-		case 'C':
-			label_data.tire_class = parse_tire_class(optarg);
+		case 'C' /* --tire-class=CLASS */:
+			data.tire_class = parse_tire_class(optarg);
 			break;
-		case 'F':
-			label_data.fuel_efficiency = parse_fuel_efficiency_class(optarg);
+		case 'F' /* --fuel-efficiency=CLASS */:
+			data.fuel_efficiency = parse_fuel_efficiency_class(optarg);
 			break;
-		case 'G':
-			label_data.wet_grip = parse_wet_grip_class(optarg);
+		case 'G' /* --wet-grip=CLASS */:
+			data.wet_grip = parse_wet_grip_class(optarg);
 			break;
-		case 'R':
-			label_data.rolling_noise = parse_rolling_noise_class(optarg);
+		case 'R' /* --rolling-noise=CLASS */:
+			data.rolling_noise = parse_rolling_noise_class(optarg);
 			break;
-		case 'N':
-			label_data.rolling_noise_db = parse_rolling_noise_db(optarg);
+		case 'N' /* --rolling-noise-db=DB */:
+			data.rolling_noise_db = parse_rolling_noise_db(optarg);
 			break;
 
 		default:
@@ -143,7 +142,7 @@ return_usage:
 
 	if (optind != argc)
 		/* this program does not take any arguments */
-		goto return_usage;
+		goto usage;
 
 #if ENABLE_CGI
 	/* detect whatever we are in the CGI environment, and if not, proceed
@@ -181,21 +180,21 @@ return_usage:
 
 #if ENABLE_PNG
 				if (strstr(token, "PNG=") == token) {
-					label_format = FORMAT_PNG;
-					parse_label_dimensions(&token[4], &label_width, &label_height);
+					format = FORMAT_PNG;
+					parse_label_dimensions(&token[4], &width, &height);
 				}
 #endif
 
 				if (strstr(token, "C=") == token)
-					label_data.tire_class = parse_tire_class(&token[2]);
+					data.tire_class = parse_tire_class(&token[2]);
 				else if (strstr(token, "F=") == token)
-					label_data.fuel_efficiency = parse_fuel_efficiency_class(&token[2]);
+					data.fuel_efficiency = parse_fuel_efficiency_class(&token[2]);
 				else if (strstr(token, "G=") == token)
-					label_data.wet_grip = parse_wet_grip_class(&token[2]);
+					data.wet_grip = parse_wet_grip_class(&token[2]);
 				else if (strstr(token, "R=") == token)
-					label_data.rolling_noise = parse_rolling_noise_class(&token[2]);
+					data.rolling_noise = parse_rolling_noise_class(&token[2]);
 				else if (strstr(token, "N=") == token)
-					label_data.rolling_noise_db = parse_rolling_noise_db(&token[2]);
+					data.rolling_noise_db = parse_rolling_noise_db(&token[2]);
 
 			}
 
@@ -203,9 +202,9 @@ return_usage:
 		}
 
 	}
-#endif /* ENABLE_CGI */
+#endif
 
-	if (label_data.tire_class == TC_ERROR) {
+	if (data.tire_class == TC_ERROR) {
 		fprintf(stderr, "error: tire class option is required\n");
 #if ENABLE_CGI
 		if (cgi)
@@ -214,14 +213,15 @@ return_usage:
 		return EXIT_FAILURE;
 	}
 
-	if ((label_svg_image = create_label(&label_data)) == NULL) {
+	if ((label = create_label(&data)) == NULL) {
 		perror("error: create label");
 		return EXIT_FAILURE;
 	}
 
 #if ENABLE_PNG
-	struct raster_png *png;
-	if ((png = raster_svg_to_png(label_svg_image, label_width, label_height)) == NULL) {
+	struct raster_png *png = NULL;
+	if (format == FORMAT_PNG &&
+			(png = raster_svg_to_png(label, width, height)) == NULL) {
 		perror("error: raster label to PNG");
 		return EXIT_FAILURE;
 	}
@@ -230,10 +230,10 @@ return_usage:
 #if ENABLE_CGI
 	if (cgi) {
 		fprintf(stdout, "Status: 200 OK\r\n");
-		switch (label_format) {
+		switch (format) {
 		case FORMAT_SVG:
 			fprintf(stdout, "Content-Type: image/svg+xml\r\n");
-			fprintf(stdout, "Content-Length: %zu\r\n", strlen(label_svg_image));
+			fprintf(stdout, "Content-Length: %zu\r\n", strlen(label));
 			break;
 #if ENABLE_PNG
 		case FORMAT_PNG:
@@ -247,9 +247,9 @@ return_usage:
 #endif
 
 	/* dump created label to the standard output */
-	switch (label_format) {
+	switch (format) {
 	case FORMAT_SVG:
-		fprintf(stdout, "%s\n", label_svg_image);
+		fprintf(stdout, "%s\n", label);
 		break;
 #if ENABLE_PNG
 	case FORMAT_PNG:
@@ -261,6 +261,6 @@ return_usage:
 #if ENABLE_PNG
 	raster_png_free(png);
 #endif
-	free(label_svg_image);
+	free(label);
 	return EXIT_SUCCESS;
 }
