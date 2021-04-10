@@ -10,6 +10,7 @@
 
 #include <ctype.h>
 #include <getopt.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,7 +60,7 @@ void parse_label_dimensions(const char *str, int *width, int *height) {
 int main(int argc, char **argv) {
 
 	int opt;
-	const char *opts = "hVC:F:G:R:N:";
+	const char *opts = "hVM:T:S:C:F:G:R:N:";
 	struct option longopts[] = {
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
@@ -67,6 +68,9 @@ int main(int argc, char **argv) {
 #if ENABLE_PNG
 		{ "output-png", required_argument, NULL, 'p' },
 #endif
+		{ "trademark", required_argument, NULL, 'M' },
+		{ "tire-type", required_argument, NULL, 'T' },
+		{ "tire-size", required_argument, NULL, 'S' },
 		{ "tire-class", required_argument, NULL, 'C' },
 		{ "fuel-efficiency", required_argument, NULL, 'F' },
 		{ "wet-grip", required_argument, NULL, 'G' },
@@ -77,6 +81,7 @@ int main(int argc, char **argv) {
 
 	struct eu_tire_label data = { 0 };
 	enum output_format format = FORMAT_SVG;
+	bool label_EU_2020_740 = false;
 	char *label = NULL;
 	/* dimensions used for PNG output */
 	int width = -1;
@@ -96,6 +101,9 @@ usage:
 					"  --output-svg                 return label in the SVG format (default)\n"
 					"  --output-png=WIDTH[xHEIGHT]  return label in the PNG format\n"
 #endif
+					"  -M, --trademark=NAME         trademark string (for EU/2020/740)\n"
+					"  -T, --tire-type=NAME         tire type string (for EU/2020/740)\n"
+					"  -S, --tire-size=NAME         tire size designation string (for EU/2020/740)\n"
 					"  -C, --tire-class=CLASS       tire class value; one of: 1, 2 or 3\n"
 					"  -F, --fuel-efficiency=CLASS  fuel efficiency class in the numerical or\n"
 					"                               letter format; allowed values: 1-7 or A-G\n"
@@ -119,6 +127,18 @@ usage:
 			parse_label_dimensions(optarg, &width, &height);
 			break;
 
+		case 'M' /* --trademark=NAME */:
+			strncpy(data.trademark, optarg, sizeof(data.trademark) - 1);
+			/* If trademark was given it must mean that someone is trying to render
+			 * EU/2020/740 label, otherwise EC/1222/2009 label will be generated. */
+			label_EU_2020_740 = true;
+			break;
+		case 'T' /* --tire-type=NAME */:
+			strncpy(data.tire_type, optarg, sizeof(data.tire_type) - 1);
+			break;
+		case 'S' /* --tire-size=NAME */:
+			strncpy(data.tire_size, optarg, sizeof(data.tire_size) - 1);
+			break;
 		case 'C' /* --tire-class=CLASS */:
 			data.tire_class = parse_tire_class(optarg);
 			break;
@@ -147,10 +167,10 @@ usage:
 #if ENABLE_CGI
 	/* detect whatever we are in the CGI environment, and if not, proceed
 	 * as a normal console-based application */
-	int cgi = 0;
+	bool cgi = false;
 	const char *tmp;
 	if ((tmp = getenv("REQUEST_METHOD")) != NULL) {
-		cgi = 1;
+		cgi = true;
 
 		/* handle GET requests only */
 		if (strcmp(tmp, "GET") != 0) {
@@ -185,7 +205,15 @@ usage:
 				}
 #endif
 
-				if (strstr(token, "C=") == token)
+				if (strstr(token, "M=") == token) {
+					strncpy(data.trademark, &token[2], sizeof(data.trademark) - 1);
+					label_EU_2020_740 = true;
+				}
+				else if (strstr(token, "T=") == token)
+					strncpy(data.tire_type, &token[2], sizeof(data.tire_type) - 1);
+				else if (strstr(token, "S=") == token)
+					strncpy(data.tire_size, &token[2], sizeof(data.tire_size) - 1);
+				else if (strstr(token, "C=") == token)
 					data.tire_class = parse_tire_class(&token[2]);
 				else if (strstr(token, "F=") == token)
 					data.fuel_efficiency = parse_fuel_efficiency_class(&token[2]);
@@ -213,7 +241,11 @@ usage:
 		return EXIT_FAILURE;
 	}
 
-	if ((label = create_label(&data)) == NULL) {
+	if (label_EU_2020_740)
+		label = create_label_EU_2020_740(&data);
+	else
+		label = create_label_EC_1222_2009(&data);
+	if (label == NULL) {
 		perror("error: create label");
 		return EXIT_FAILURE;
 	}

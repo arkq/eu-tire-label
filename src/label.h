@@ -45,6 +45,9 @@ enum rolling_noise_class {
 };
 
 struct eu_tire_label {
+	char trademark[32];
+	char tire_type[32];
+	char tire_size[32];
 	enum tire_class tire_class;
 	enum fuel_efficiency_class fuel_efficiency;
 	enum wet_grip_class wet_grip;
@@ -55,7 +58,8 @@ struct eu_tire_label {
 /* Create EU tire label in the SVG format according to the given tire label
  * data structure. Memory for the string is obtained with malloc(3), and can
  * be freed with free(3). */
-char *create_label(const struct eu_tire_label *label);
+char *create_label_EC_1222_2009(const struct eu_tire_label *data);
+char *create_label_EU_2020_740(const struct eu_tire_label *data);
 
 enum tire_class parse_tire_class(const char *str);
 enum fuel_efficiency_class parse_fuel_efficiency_class(const char *str);

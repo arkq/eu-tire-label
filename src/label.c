@@ -15,8 +15,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* auto-generated label SVG template */
-#include "label-template.h"
+/* auto-generated SVG templates */
+#include "label_EC_1222_2009-template.h"
+#include "label_EU_2020_740-template.h"
 
 /* Replace every occurrence of src in the data with dst. Memory for the new
  * string is obtained with malloc(3), and can be freed with free(3). */
@@ -61,57 +62,86 @@ static char *strrep_x(char *data, const char *src, const char *dst) {
 	return tmp;
 }
 
-char *create_label(const struct eu_tire_label *label) {
+char *create_label_EC_1222_2009(const struct eu_tire_label *data) {
 
-	const char *classes[] = { NULL, "C1", "C2", "C3" };
-	const char *letters[] = { NULL, "A", "B", "C", "D", "E", "F", "G" };
-	const char *y[] = { NULL, "24.375", "29.875", "35.375", "40.875", "46.375", "51.875", "58.375" };
-	char *image;
+	static const char *classes[] = { NULL, "C1", "C2", "C3" };
+	static const char *letters[] = { NULL, "A", "B", "C", "D", "E", "F", "G" };
+	static const char *y[] = { NULL, "24.375", "29.875", "35.375", "40.875", "46.375", "51.875", "58.375" };
+	char *label;
 
-	image = strrep(label_template, "[TIRE-CLASS]", classes[label->tire_class]);
+	label = strrep(label_EC_1222_2009_template, "[TIRE-CLASS]", classes[data->tire_class]);
 
-	if (label->fuel_efficiency != FEC_NONE) {
-		image = strrep_x(image, "[FUEL-EFFICIENCY-DISPLAY]", "");
-		image = strrep_x(image, "[FUEL-EFFICIENCY-Y]", y[label->fuel_efficiency]);
-		image = strrep_x(image, "[FUEL-EFFICIENCY]", letters[label->fuel_efficiency]);
+	if (data->fuel_efficiency != FEC_NONE) {
+		label = strrep_x(label, "[FUEL-EFFICIENCY-DISPLAY]", "");
+		label = strrep_x(label, "[FUEL-EFFICIENCY-Y]", y[data->fuel_efficiency]);
+		label = strrep_x(label, "[FUEL-EFFICIENCY]", letters[data->fuel_efficiency]);
 	}
-	image = strrep_x(image, "[FUEL-EFFICIENCY-DISPLAY]", "none");
+	label = strrep_x(label, "[FUEL-EFFICIENCY-DISPLAY]", "none");
 
-	if (label->wet_grip != WGC_NONE) {
-		image = strrep_x(image, "[WET-GRIP-DISPLAY]", "");
-		image = strrep_x(image, "[WET-GRIP-Y]", y[label->wet_grip]);
-		image = strrep_x(image, "[WET-GRIP]", letters[label->wet_grip]);
+	if (data->wet_grip != WGC_NONE) {
+		label = strrep_x(label, "[WET-GRIP-DISPLAY]", "");
+		label = strrep_x(label, "[WET-GRIP-Y]", y[data->wet_grip]);
+		label = strrep_x(label, "[WET-GRIP]", letters[data->wet_grip]);
 	}
-	image = strrep_x(image, "[WET-GRIP-DISPLAY]", "none");
+	label = strrep_x(label, "[WET-GRIP-DISPLAY]", "none");
 
-	switch (label->rolling_noise) {
+	switch (data->rolling_noise) {
 	case RNC_3:
-		image = strrep_x(image, "[ROLLING-NOISE-3-DISPLAY]", "none");
+		label = strrep_x(label, "[ROLLING-NOISE-3-DISPLAY]", "none");
 		/* fall-through */
 	case RNC_2:
-		image = strrep_x(image, "[ROLLING-NOISE-2-DISPLAY]", "none");
+		label = strrep_x(label, "[ROLLING-NOISE-2-DISPLAY]", "none");
 		/* fall-through */
 	case RNC_1:
-		image = strrep_x(image, "[ROLLING-NOISE-1-DISPLAY]", "none");
+		label = strrep_x(label, "[ROLLING-NOISE-1-DISPLAY]", "none");
 		break;
 	case RNC_NONE:
-		image = strrep_x(image, "[ROLLING-NOISE-DISPLAY]", "none");
+		label = strrep_x(label, "[ROLLING-NOISE-DISPLAY]", "none");
 		break;
 	}
-	image = strrep_x(image, "[ROLLING-NOISE-DISPLAY]", "");
-	image = strrep_x(image, "[ROLLING-NOISE-1-DISPLAY]", "");
-	image = strrep_x(image, "[ROLLING-NOISE-2-DISPLAY]", "");
-	image = strrep_x(image, "[ROLLING-NOISE-3-DISPLAY]", "");
+	label = strrep_x(label, "[ROLLING-NOISE-DISPLAY]", "");
+	label = strrep_x(label, "[ROLLING-NOISE-1-DISPLAY]", "");
+	label = strrep_x(label, "[ROLLING-NOISE-2-DISPLAY]", "");
+	label = strrep_x(label, "[ROLLING-NOISE-3-DISPLAY]", "");
 
-	if (label->rolling_noise_db) {
+	if (data->rolling_noise_db) {
 		char tmp[8];
-		sprintf(tmp, "%d", label->rolling_noise_db);
-		image = strrep_x(image, "[ROLLING-NOISE-DB-DISPLAY]", "");
-		image = strrep_x(image, "[ROLLING-NOISE-DB]", tmp);
+		sprintf(tmp, "%d", data->rolling_noise_db);
+		label = strrep_x(label, "[ROLLING-NOISE-DB-DISPLAY]", "");
+		label = strrep_x(label, "[ROLLING-NOISE-DB]", tmp);
 	}
-	image = strrep_x(image, "[ROLLING-NOISE-DB-DISPLAY]", "none");
+	label = strrep_x(label, "[ROLLING-NOISE-DB-DISPLAY]", "none");
 
-	return image;
+	return label;
+}
+
+char *create_label_EU_2020_740(const struct eu_tire_label *data) {
+
+	static const char *classes[] = { NULL, "C1", "C2", "C3" };
+	static const char *letters[] = { NULL, "A", "B", "C", "D", "E", "E", "E" };
+	static const char *y[] = { NULL, "19.25", "27.25", "35.25", "43.25", "51.25", "51.25", "51.25" };
+	char *label;
+
+	label = strrep(label_EU_2020_740_template, "[TRADEMARK]", data->trademark);
+	label = strrep_x(label, "[TIRE-TYPE]", data->tire_type);
+	label = strrep_x(label, "[TIRE-SIZE-DESIGNATION]", data->tire_size);
+	label = strrep_x(label, "[TIRE-CLASS]", classes[data->tire_class]);
+
+	if (data->fuel_efficiency != FEC_NONE) {
+		label = strrep_x(label, "[FUEL-EFFICIENCY-DISPLAY]", "");
+		label = strrep_x(label, "[FUEL-EFFICIENCY-Y]", y[data->fuel_efficiency]);
+		label = strrep_x(label, "[FUEL-EFFICIENCY]", letters[data->fuel_efficiency]);
+	}
+	label = strrep_x(label, "[FUEL-EFFICIENCY-DISPLAY]", "none");
+
+	if (data->wet_grip != WGC_NONE) {
+		label = strrep_x(label, "[WET-GRIP-DISPLAY]", "");
+		label = strrep_x(label, "[WET-GRIP-Y]", y[data->wet_grip]);
+		label = strrep_x(label, "[WET-GRIP]", letters[data->wet_grip]);
+	}
+	label = strrep_x(label, "[WET-GRIP-DISPLAY]", "none");
+
+	return label;
 }
 
 enum tire_class parse_tire_class(const char *str) {
@@ -133,13 +163,13 @@ enum fuel_efficiency_class parse_fuel_efficiency_class(const char *str) {
 		return (enum fuel_efficiency_class)value;
 
 	if (strlen(str) != 1)
-		goto return_failure;
+		goto fail;
 
 	value = tolower(str[0]) - 'a' + 1;
 	if (value >= 1 && value <= 7)
 		return (enum fuel_efficiency_class)value;
 
-return_failure:
+fail:
 	fprintf(stderr, "warning: invalid fuel efficiency class: %s\n", str);
 	return FEC_NONE;
 }
@@ -152,13 +182,13 @@ enum wet_grip_class parse_wet_grip_class(const char *str) {
 		return (enum wet_grip_class)value;
 
 	if (strlen(str) != 1)
-		goto return_failure;
+		goto fail;
 
 	value = tolower(str[0]) - 'a' + 1;
 	if (value >= 1 && value <= 7)
 		return (enum wet_grip_class)value;
 
-return_failure:
+fail:
 	fprintf(stderr, "warning: invalid wet grip class: %s\n", str);
 	return WGC_NONE;
 }
@@ -178,12 +208,9 @@ unsigned int parse_rolling_noise_db(const char *str) {
 
 	int value = atoi(str);
 
-	if (value < 10 || value > 120)
-		goto return_failure;
+	if (value >= 10 && value <= 120)
+		return value;
 
-	return value;
-
-return_failure:
 	fprintf(stderr, "warning: invalid rolling noise dB value: %s\n", str);
 	return 0;
 }

@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 75 110">
+	<style>
+		text { font-family: Verdana, Arial, sans-serif; }
+		text.calibri { font-family: Calibri, Arial, sans-serif; }
+	</style>
+	<defs>
+		<g id="EU-star">
+			<g id="c">
+				<path id="t" d="M 0,0 v 1 h 0.5 z" transform="translate(0,-1) rotate(18)" />
+				<use xlink:href="#t" transform="scale(-1,1)" />
+			</g>
+			<use xlink:href="#c" transform="rotate(72)" />
+			<use xlink:href="#c" transform="rotate(144)" />
+			<use xlink:href="#c" transform="rotate(216)" />
+			<use xlink:href="#c" transform="rotate(288)" />
+		</g>
+	</defs>
+	<rect width="75" height="110" fill="white" />
+	<g id="header" transform="translate(3,3)">
+		<g id="EU-flag">
+			<rect width="16" height="11" fill="#0033ff" />
+			<g fill="#ffff00" transform="scale(0.6) translate(13.5,9)">
+				<use xlink:href="#EU-star" y="6"/>
+				<use xlink:href="#EU-star" transform="rotate(30) translate(0,6) rotate(330)"/>
+				<use xlink:href="#EU-star" transform="rotate(60) translate(0,6) rotate(300)"/>
+				<use xlink:href="#EU-star" x="-6"/>
+				<use xlink:href="#EU-star" transform="rotate(120) translate(0,6) rotate(240)"/>
+				<use xlink:href="#EU-star" transform="rotate(150) translate(0,6) rotate(210)"/>
+				<use xlink:href="#EU-star" y="-6"/>
+				<use xlink:href="#EU-star" transform="rotate(210) translate(0,6) rotate(150)"/>
+				<use xlink:href="#EU-star" transform="rotate(240) translate(0,6) rotate(120)"/>
+				<use xlink:href="#EU-star" x="6"/>
+				<use xlink:href="#EU-star" transform="rotate(300) translate(0,6) rotate(60)"/>
+				<use xlink:href="#EU-star" transform="rotate(330) translate(0,6) rotate(30)"/>
+			</g>
+		</g>
+		<g id="energy" transform="translate(18,1.7)" fill="#0033ff">
+			<path d="m 1.59203,1.5435132 v 1.458979 H 5.0179754 V 4.4953603 H 1.59203 V 6.1706007 H 5.1647118 V 7.6634688 H 0.02474559 V 0.016756 H 5.1647118 v 1.5267572 z" />
+			<path d="M 12.592823,0.01665099 V 7.6637132 H 10.721585 L 7.576884,2.5806947 V 7.6637132 H 6.0095996 V 0.01665099 H 7.880838 L 11.025539,5.1681464 V 0.01665099 Z" />
+			<path d="m 15.050028,1.5435132 v 1.458979 h 3.425945 V 4.4953603 H 15.050028 V 6.1706007 H 18.62271 V 7.6634688 H 13.482744 V 0.01675599 H 18.62271 V 1.5435132 Z" />
+			<path d="M 19.433984,7.6636064 V 0.01654418 h 3.60727 c 0.420295,0 0.780847,0.04192469 1.081656,0.12507531 0.30081,0.0838494 0.548515,0.21905647 0.744513,0.40492256 0.19495,0.18621547 0.33959,0.43322173 0.43392,0.74101875 0.09328,0.3074477 0.140448,0.6816255 0.140448,1.1225334 0,0.2431632 -0.01572,0.4747971 -0.04507,0.6945523 -0.0304,0.2208033 -0.07127,0.4181987 -0.123678,0.5932342 -0.06813,0.1977448 -0.188661,0.3682385 -0.360552,0.5125293 0.149881,0.1593138 0.260981,0.3497217 0.332253,0.5698263 0.07127,0.2201046 0.106908,0.4636171 0.106908,0.7294895 V 7.6636064 H 23.7393 V 5.6805689 c 0,-0.2885816 -0.06708,-0.485977 -0.202287,-0.5925355 C 23.401806,4.9818242 23.18799,4.9283702 22.894517,4.9283702 H 21.01175 v 2.7352362 z m 1.577766,-4.216575 h 1.769571 c 0.225345,0 0.409813,-0.015372 0.552357,-0.045418 0.142544,-0.030745 0.248404,-0.068826 0.315484,-0.1145942 0.113196,-0.091186 0.169794,-0.32282 0.169794,-0.6945522 0,-0.4181987 -0.03459,-0.6956004 -0.101667,-0.832205 -0.06813,-0.1519769 -0.28928,-0.2277907 -0.665554,-0.2277907 H 21.01175 Z" />
+			<path d="m 28.913714,3.4471711 h 3.66282 c 0.03773,0.2889309 0.05765,0.5030962 0.06184,0.6435439 0.0042,0.140797 0.0052,0.2644749 0.0052,0.3703347 v 0.626774 c 0,0.5925355 -0.0828,1.1169434 -0.247355,1.5732237 -0.10586,0.2885816 -0.279848,0.5146255 -0.524059,0.6777824 -0.244561,0.1635063 -0.576814,0.2718117 -0.998157,0.3249163 -0.225345,0.022709 -0.458027,0.038082 -0.698046,0.045418 -0.241067,0.00734 -0.481435,0.011529 -0.721454,0.011529 -1.20219,0 -2.029504,-0.1939017 -2.480194,-0.5813556 C 26.485925,6.7368612 26.241714,5.9427379 26.241714,4.7573174 V 4.2786773 c 0,-0.1596632 0.0042,-0.32282 0.01153,-0.48982 V 2.8885247 c 0,-0.9876757 0.199143,-1.7171652 0.597427,-2.18811909 0.210672,-0.24316317 0.497856,-0.42553554 0.861902,-0.54711712 0.364745,-0.12123221 0.794473,-0.182023 1.29128,-0.182023 h 0.416103 c 0.135207,0 0.274606,0.0034937 0.4175,0.01083054 h 0.180276 0.203334 0.405622 c 0.735778,0.02305858 1.252849,0.22289957 1.549466,0.59847486 0.296617,0.37627403 0.44545,0.91011501 0.44545,1.60152291 v 0.6721924 h -1.577766 c 0,-0.6383033 -0.04192,-1.0372865 -0.124726,-1.1969497 -0.03773,-0.075814 -0.194949,-0.1212322 -0.4727,-0.1366046 -0.232682,-0.014674 -0.460124,-0.024456 -0.682674,-0.02795 -0.221153,-0.00384 -0.452787,-0.00594 -0.692805,-0.00594 -0.578561,0 -0.920247,0.060791 -1.025059,0.1823724 -0.10586,0.1292677 -0.165602,0.5506108 -0.180276,1.2650773 0,0.075814 -0.0021,0.1477845 -0.0063,0.2162615 -0.0031,0.068128 -0.0052,0.1446401 -0.0052,0.2277907 v 0.4335711 l 0.01153,0.9681109 c 0,0.1977447 0.0073,0.3843095 0.02201,0.5586464 0.01467,0.1750355 0.04088,0.3343493 0.07861,0.4786401 V 5.794604 c 0.03773,0.0835 0.09747,0.1579163 0.180276,0.2225502 0.0828,0.064634 0.203335,0.107956 0.360553,0.1306652 0.165602,0.023059 0.319675,0.033889 0.462219,0.033889 0.09014,0.00804 0.182373,0.011879 0.276703,0.011879 h 0.275655 0.394441 c 0.263078,0 0.475845,-0.00978 0.637255,-0.028648 0.161411,-0.018517 0.272511,-0.059044 0.332254,-0.1198347 0.104811,-0.091186 0.158265,-0.3947908 0.158265,-0.9115125 V 4.9512191 h -2.130123 z" />
+			<path d="m 34.780587,-0.01776211 h 1.739176 l -0.69071,2.19825091 1.8929,-0.310592 -2.71113,5.9222108 0.81823,-4.2927382 -1.815688,0.077561 z" />
+		</g>
+		<g id="QR-code" transform="translate(58,0)">
+		</g>
+	</g>
+	<g transform="translate(3,21)">
+		<text x="0" y="-1" font-size="2.46944" font-weight="bold">[TRADEMARK]</text>
+		<text x="69" y="-1" font-size="2.46944" text-anchor="end" text-align="end">[TIRE-TYPE]</text>
+		<line x1="0" y1="0" x2="69" y2="0" stroke="black" stroke-width="0.1764" />
+	</g>
+	<g transform="translate(3,28)">
+		<text x="0" y="-1" font-size="3.52778">[TIRE-SIZE-DESIGNATION]</text>
+		<text x="69" y="-1" font-size="2.46944" text-anchor="end" text-align="end">[TIRE-CLASS]</text>
+		<line x1="0" y1="0" x2="69" y2="0" stroke="black" stroke-width="0.1764" />
+	</g>
+	<g id="fuel-efficiency" transform="translate(3,30)">
+		<g stroke="black" stroke-width="0.1">
+			<path d="M 0,16 h 7.75 l 3.25,3.25 l -3.25,3.25 h -7.75 z" fill="#00ff00" />
+			<path d="M 0,24 h 9.75 l 3.25,3.25 l -3.25,3.25 h -9.75 z" fill="#8cff00" />
+			<path d="M 0,32 h 11.75 l 3.25,3.25 l -3.25,3.25 h -11.75 z" fill="#ffff00" />
+			<path d="M 0,40 h 13.75 l 3.25,3.25 l -3.25,3.25 h -13.75 z" fill="#ffb300" />
+			<path d="M 0,48 h 15.75 l 3.25,3.25 l -3.25,3.25 h -15.75 z" fill="#ff0000" />
+			<g fill="white" font-size="6.3" font-weight="bold" transform="translate(-0.5,2.2)">
+				<text x="4.5" y="19.25" class="calibri" text-anchor="middle">A</text>
+				<text x="4.5" y="27.25" class="calibri" text-anchor="middle">B</text>
+				<text x="4.5" y="35.25" class="calibri" text-anchor="middle">C</text>
+				<text x="4.5" y="43.25" class="calibri" text-anchor="middle">D</text>
+				<text x="4.5" y="51.25" class="calibri" text-anchor="middle">E</text>
+			</g>
+		</g>
+		<g display="[FUEL-EFFICIENCY-DISPLAY]" transform="translate(31.5,[FUEL-EFFICIENCY-Y])" fill="black">
+			<path d="M 0,-4.75 v 9.5 h -6.5 l -4,-4.75 l 4,-4.75 z"/>
+			<text x="-7" y="3" font-size="8.5" fill="white" font-weight="bold">[FUEL-EFFICIENCY]</text>
+		</g>
+	</g>
+	<line x1="37.5" y1="30" x2="37.5" y2="84.5" stroke="black" stroke-width="0.1764" />
+	<g id="wet-grip" transform="translate(39.5,30)">
+		<g stroke="black" stroke-width="0.1">
+			<path d="M 0,16 h 7.75 l 3.25,3.25 l -3.25,3.25 h -7.75 z" fill="#0066ff" />
+			<path d="M 0,24 h 9.75 l 3.25,3.25 l -3.25,3.25 h -9.75 z" fill="#1999ff" />
+			<path d="M 0,32 h 11.75 l 3.25,3.25 l -3.25,3.25 h -11.75 z" fill="#59ccff" />
+			<path d="M 0,40 h 13.75 l 3.25,3.25 l -3.25,3.25 h -13.75 z" fill="#80e7ff" />
+			<path d="M 0,48 h 15.75 l 3.25,3.25 l -3.25,3.25 h -15.75 z" fill="#b3ffff" />
+			<g fill="white" font-size="6.3" font-weight="bold" transform="translate(-0.5,2.2)">
+				<text x="4.5" y="19.25" class="calibri" text-anchor="middle">A</text>
+				<text x="4.5" y="27.25" class="calibri" text-anchor="middle">B</text>
+				<text x="4.5" y="35.25" class="calibri" text-anchor="middle">C</text>
+				<text x="4.5" y="43.25" class="calibri" text-anchor="middle">D</text>
+				<text x="4.5" y="51.25" class="calibri" text-anchor="middle">E</text>
+			</g>
+		</g>
+		<g display="[WET-GRIP-DISPLAY]" transform="translate(32.5,[WET-GRIP-Y])" fill="black">
+			<path d="M 0,-4.75 v 9.5 h -6.5 l -4,-4.75 l 4,-4.75 z"/>
+			<text x="-7" y="3" font-size="8.5" fill="white" font-weight="bold">[WET-GRIP]</text>
+		</g>
+	</g>
+	<line x1="3" y1="87" x2="72" y2="87" stroke="black" stroke-width="0.1764" />
+	<g id="footer" transform="translate(0,108)">
+	</g>
+</svg>

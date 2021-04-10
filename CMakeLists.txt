@@ -16,13 +16,24 @@ endif()
 
 add_executable(label2array
 	${CMAKE_CURRENT_SOURCE_DIR}/src/label2array.c)
+
+set(SOURCE_LABEL_EC_1222_2009 ${CMAKE_CURRENT_SOURCE_DIR}/src/label-EC-1222-2009.svg)
+set(GENERATED_LABEL_EC_1222_2009 ${CMAKE_CURRENT_BINARY_DIR}/label_EC_1222_2009-template.h)
 add_custom_command(
-	DEPENDS label2array ${CMAKE_CURRENT_SOURCE_DIR}/src/label.svg
-	COMMAND label2array label_template ${CMAKE_CURRENT_SOURCE_DIR}/src/label.svg > label-template.h
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/label-template.h)
+	DEPENDS label2array ${SOURCE_LABEL_EC_1222_2009}
+	COMMAND label2array label_EC_1222_2009_template ${SOURCE_LABEL_EC_1222_2009} > ${GENERATED_LABEL_EC_1222_2009}
+	OUTPUT ${GENERATED_LABEL_EC_1222_2009})
+
+set(SOURCE_LABEL_EU_2020_740 ${CMAKE_CURRENT_SOURCE_DIR}/src/label-EU-2020-740.svg)
+set(GENERATED_LABEL_EU_2020_740 ${CMAKE_CURRENT_BINARY_DIR}/label_EU_2020_740-template.h)
+add_custom_command(
+	DEPENDS label2array ${SOURCE_LABEL_EU_2020_740}
+	COMMAND label2array label_EU_2020_740_template ${SOURCE_LABEL_EU_2020_740} > ${GENERATED_LABEL_EU_2020_740}
+	OUTPUT ${GENERATED_LABEL_EU_2020_740})
 
 add_executable(eu-tire-label
-	${CMAKE_CURRENT_BINARY_DIR}/label-template.h
+	${GENERATED_LABEL_EC_1222_2009}
+	${GENERATED_LABEL_EU_2020_740}
 	${CMAKE_CURRENT_SOURCE_DIR}/src/label.c
 	${CMAKE_CURRENT_SOURCE_DIR}/src/main.c)
 
