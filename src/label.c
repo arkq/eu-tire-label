@@ -64,26 +64,22 @@ static char *strrep_x(char *data, const char *src, const char *dst) {
 
 char *create_label_EC_1222_2009(const struct eu_tire_label *data) {
 
-	static const char *classes[] = { NULL, "C1", "C2", "C3" };
-	static const char *letters[] = { NULL, "A", "B", "C", "D", "E", "F", "G" };
-	static const char *y[] = { NULL, "24.375", "29.875", "35.375", "40.875", "46.375", "51.875", "58.375" };
+	static const char *classes[] = { "", "C1", "C2", "C3" };
+	static const char *display[] = { "none", "", "", "", "", "", "", "" };
+	static const char *letters[] = { "", "A", "B", "C", "D", "E", "F", "G" };
+	static const char *y[] = { "0", "24.375", "29.875", "35.375", "40.875", "46.375", "51.875", "58.375" };
+	char db[8] = "";
 	char *label;
 
 	label = strrep(label_EC_1222_2009_template, "[TIRE-CLASS]", classes[data->tire_class]);
 
-	if (data->fuel_efficiency != FEC_NONE) {
-		label = strrep_x(label, "[FUEL-EFFICIENCY-DISPLAY]", "");
-		label = strrep_x(label, "[FUEL-EFFICIENCY-Y]", y[data->fuel_efficiency]);
-		label = strrep_x(label, "[FUEL-EFFICIENCY]", letters[data->fuel_efficiency]);
-	}
-	label = strrep_x(label, "[FUEL-EFFICIENCY-DISPLAY]", "none");
+	label = strrep_x(label, "[FUEL-EFFICIENCY-DISPLAY]", display[data->fuel_efficiency]);
+	label = strrep_x(label, "[FUEL-EFFICIENCY-Y]", y[data->fuel_efficiency]);
+	label = strrep_x(label, "[FUEL-EFFICIENCY]", letters[data->fuel_efficiency]);
 
-	if (data->wet_grip != WGC_NONE) {
-		label = strrep_x(label, "[WET-GRIP-DISPLAY]", "");
-		label = strrep_x(label, "[WET-GRIP-Y]", y[data->wet_grip]);
-		label = strrep_x(label, "[WET-GRIP]", letters[data->wet_grip]);
-	}
-	label = strrep_x(label, "[WET-GRIP-DISPLAY]", "none");
+	label = strrep_x(label, "[WET-GRIP-DISPLAY]", display[data->wet_grip]);
+	label = strrep_x(label, "[WET-GRIP-Y]", y[data->wet_grip]);
+	label = strrep_x(label, "[WET-GRIP]", letters[data->wet_grip]);
 
 	switch (data->rolling_noise) {
 	case RNC_3:
@@ -94,32 +90,27 @@ char *create_label_EC_1222_2009(const struct eu_tire_label *data) {
 		/* fall-through */
 	case RNC_1:
 		label = strrep_x(label, "[ROLLING-NOISE-1-DISPLAY]", "none");
-		break;
+		/* fall-through */
 	case RNC_NONE:
-		label = strrep_x(label, "[ROLLING-NOISE-DISPLAY]", "none");
-		break;
+		label = strrep_x(label, "[ROLLING-NOISE-1-DISPLAY]", "");
+		label = strrep_x(label, "[ROLLING-NOISE-2-DISPLAY]", "");
+		label = strrep_x(label, "[ROLLING-NOISE-3-DISPLAY]", "");
 	}
-	label = strrep_x(label, "[ROLLING-NOISE-DISPLAY]", "");
-	label = strrep_x(label, "[ROLLING-NOISE-1-DISPLAY]", "");
-	label = strrep_x(label, "[ROLLING-NOISE-2-DISPLAY]", "");
-	label = strrep_x(label, "[ROLLING-NOISE-3-DISPLAY]", "");
 
-	if (data->rolling_noise_db) {
-		char tmp[8];
-		sprintf(tmp, "%d", data->rolling_noise_db);
-		label = strrep_x(label, "[ROLLING-NOISE-DB-DISPLAY]", "");
-		label = strrep_x(label, "[ROLLING-NOISE-DB]", tmp);
-	}
-	label = strrep_x(label, "[ROLLING-NOISE-DB-DISPLAY]", "none");
+	if (data->rolling_noise_db)
+		sprintf(db, "%d", data->rolling_noise_db);
+	label = strrep_x(label, "[ROLLING-NOISE-DB-DISPLAY]", data->rolling_noise_db ? "" : "none");
+	label = strrep_x(label, "[ROLLING-NOISE-DB]", db);
 
 	return label;
 }
 
 char *create_label_EU_2020_740(const struct eu_tire_label *data) {
 
-	static const char *classes[] = { NULL, "C1", "C2", "C3" };
-	static const char *letters[] = { NULL, "A", "B", "C", "D", "E", "E", "E" };
-	static const char *y[] = { NULL, "19.25", "27.25", "35.25", "43.25", "51.25", "51.25", "51.25" };
+	static const char *classes[] = { "", "C1", "C2", "C3" };
+	static const char *display[] = { "none", "", "", "", "", "", "", "" };
+	static const char *letters[] = { "", "A", "B", "C", "D", "E", "E", "E" };
+	static const char *y[] = { "0", "19.25", "27.25", "35.25", "43.25", "51.25", "51.25", "51.25" };
 	char *label;
 
 	label = strrep(label_EU_2020_740_template, "[TRADEMARK]", data->trademark);
@@ -127,19 +118,13 @@ char *create_label_EU_2020_740(const struct eu_tire_label *data) {
 	label = strrep_x(label, "[TIRE-SIZE-DESIGNATION]", data->tire_size);
 	label = strrep_x(label, "[TIRE-CLASS]", classes[data->tire_class]);
 
-	if (data->fuel_efficiency != FEC_NONE) {
-		label = strrep_x(label, "[FUEL-EFFICIENCY-DISPLAY]", "");
-		label = strrep_x(label, "[FUEL-EFFICIENCY-Y]", y[data->fuel_efficiency]);
-		label = strrep_x(label, "[FUEL-EFFICIENCY]", letters[data->fuel_efficiency]);
-	}
-	label = strrep_x(label, "[FUEL-EFFICIENCY-DISPLAY]", "none");
+	label = strrep_x(label, "[FUEL-EFFICIENCY-DISPLAY]", display[data->fuel_efficiency]);
+	label = strrep_x(label, "[FUEL-EFFICIENCY-Y]", y[data->fuel_efficiency]);
+	label = strrep_x(label, "[FUEL-EFFICIENCY]", letters[data->fuel_efficiency]);
 
-	if (data->wet_grip != WGC_NONE) {
-		label = strrep_x(label, "[WET-GRIP-DISPLAY]", "");
-		label = strrep_x(label, "[WET-GRIP-Y]", y[data->wet_grip]);
-		label = strrep_x(label, "[WET-GRIP]", letters[data->wet_grip]);
-	}
-	label = strrep_x(label, "[WET-GRIP-DISPLAY]", "none");
+	label = strrep_x(label, "[WET-GRIP-DISPLAY]", display[data->wet_grip]);
+	label = strrep_x(label, "[WET-GRIP-Y]", y[data->wet_grip]);
+	label = strrep_x(label, "[WET-GRIP]", letters[data->wet_grip]);
 
 	return label;
 }
