@@ -111,6 +111,17 @@ char *create_label_EU_2020_740(const struct eu_tire_label *data) {
 	static const char *display[] = { "none", "", "", "", "", "", "", "" };
 	static const char *letters[] = { "", "A", "B", "C", "D", "E", "E", "E" };
 	static const char *y[] = { "0", "19.25", "27.25", "35.25", "43.25", "51.25", "51.25", "51.25" };
+	static const char *footer[][3] = {
+		{ "0", "0", "0" },     /* empty */
+		{ "22.5", "0", "0" },  /* rolling noise */
+		{ "0", "30", "0" },    /* snow grip */
+		{ "14", "41", "0" },   /* rolling noise + snow grip */
+		{ "0", "0", "30" },    /* ice grip */
+		{ "14", "0", "41" },   /* rolling noise + ice grip */
+		{ "0", "20", "40" },   /* snow grip + ice grip */
+		{ "4", "31", "51" }};  /* rolling noise + snow grip + ice grip */
+	unsigned int x = 0;
+	char db[8] = "";
 	char *label;
 
 	label = strrep(label_EU_2020_740_template, "[TRADEMARK]", data->trademark);
@@ -125,6 +136,43 @@ char *create_label_EU_2020_740(const struct eu_tire_label *data) {
 	label = strrep_x(label, "[WET-GRIP-DISPLAY]", display[data->wet_grip]);
 	label = strrep_x(label, "[WET-GRIP-Y]", y[data->wet_grip]);
 	label = strrep_x(label, "[WET-GRIP]", letters[data->wet_grip]);
+
+	if (data->rolling_noise != RNC_NONE || data->rolling_noise_db)
+		x |= 1 << 0;
+	if (data->snow_grip)
+		x |= 1 << 1;
+	if (data->ice_grip)
+		x |= 1 << 2;
+
+	if (data->rolling_noise_db)
+		sprintf(db, "%d", data->rolling_noise_db);
+
+	label = strrep_x(label, "[ROLLING-NOISE-DISPLAY]", data->rolling_noise_db ? "" : "none");
+	label = strrep_x(label, "[ROLLING-NOISE-X]", footer[x][0]);
+	label = strrep_x(label, "[ROLLING-NOISE-DB]", db);
+
+	switch (data->rolling_noise) {
+	case RNC_1:
+		label = strrep_x(label, "[ROLLING-NOISE-A]", "active");
+		goto case_rnc_none;
+	case RNC_2:
+		label = strrep_x(label, "[ROLLING-NOISE-B]", "active");
+		goto case_rnc_none;
+	case RNC_3:
+		label = strrep_x(label, "[ROLLING-NOISE-C]", "active");
+		goto case_rnc_none;
+	case RNC_NONE:
+	case_rnc_none:
+		label = strrep_x(label, "[ROLLING-NOISE-A]", "");
+		label = strrep_x(label, "[ROLLING-NOISE-B]", "");
+		label = strrep_x(label, "[ROLLING-NOISE-C]", "");
+	}
+
+	label = strrep_x(label, "[SNOW-GRIP-DISPLAY]", data->snow_grip ? "" : "none");
+	label = strrep_x(label, "[SNOW-GRIP-X]", footer[x][1]);
+
+	label = strrep_x(label, "[ICE-GRIP-DISPLAY]", data->ice_grip ? "" : "none");
+	label = strrep_x(label, "[ICE-GRIP-X]", footer[x][2]);
 
 	return label;
 }

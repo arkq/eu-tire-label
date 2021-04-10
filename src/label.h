@@ -53,6 +53,8 @@ struct eu_tire_label {
 	enum wet_grip_class wet_grip;
 	enum rolling_noise_class rolling_noise;
 	unsigned int rolling_noise_db;
+	unsigned int snow_grip;
+	unsigned int ice_grip;
 };
 
 /* Create EU tire label in the SVG format according to the given tire label

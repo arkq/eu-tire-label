@@ -60,7 +60,7 @@ void parse_label_dimensions(const char *str, int *width, int *height) {
 int main(int argc, char **argv) {
 
 	int opt;
-	const char *opts = "hVM:T:S:C:F:G:R:N:";
+	const char *opts = "hVM:T:S:C:F:G:R:N:WI";
 	struct option longopts[] = {
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
@@ -76,6 +76,8 @@ int main(int argc, char **argv) {
 		{ "wet-grip", required_argument, NULL, 'G' },
 		{ "rolling-noise", required_argument, NULL, 'R' },
 		{ "rolling-noise-db", required_argument, NULL, 'N' },
+		{ "snow-grip", no_argument, NULL, 'W' },
+		{ "ice-grip", no_argument, NULL, 'I' },
 		{ 0, 0, 0, 0 },
 	};
 
@@ -111,7 +113,9 @@ usage:
 					"                               format; allowed values: 1-7 or A-G\n"
 					"  -R, --rolling-noise=CLASS    external rolling noise class value;\n"
 					"                               one of: 1, 2 or 3\n"
-					"  -N, --rolling-noise-db=DB    external rolling noise value expressed in dB\n",
+					"  -N, --rolling-noise-db=DB    external rolling noise value expressed in dB\n"
+					"  -W, --snow-grip              show snow grip pictogram (for EU/2020/740)\n"
+					"  -I, --ice-grip               show ice grip pictogram (for EU/2020/740)\n",
 					argv[0]);
 			return EXIT_SUCCESS;
 
@@ -153,6 +157,12 @@ usage:
 			break;
 		case 'N' /* --rolling-noise-db=DB */:
 			data.rolling_noise_db = parse_rolling_noise_db(optarg);
+			break;
+		case 'W' /* --snow-grip */:
+			data.snow_grip = 1;
+			break;
+		case 'I' /* --ice-grip */:
+			data.ice_grip = 1;
 			break;
 
 		default:
@@ -223,6 +233,10 @@ usage:
 					data.rolling_noise = parse_rolling_noise_class(&token[2]);
 				else if (strstr(token, "N=") == token)
 					data.rolling_noise_db = parse_rolling_noise_db(&token[2]);
+				else if (strstr(token, "W") == token)
+					data.snow_grip = 1;
+				else if (strstr(token, "I") == token)
+					data.ice_grip = 1;
 
 			}
 
