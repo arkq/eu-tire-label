@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 3.2)
 project(EU-tire-label
-	VERSION 1.0.0
+	VERSION 2.0.0
 	LANGUAGES C)
 
 option(ENABLE_CGI "Enable Common Gateway Interface (CGI) support." OFF)
@@ -31,9 +31,19 @@ add_custom_command(
 	COMMAND label2array label_EU_2020_740_template ${SOURCE_LABEL_EU_2020_740} > ${GENERATED_LABEL_EU_2020_740}
 	OUTPUT ${GENERATED_LABEL_EU_2020_740})
 
+set(DOWNLOADED_QRCODE_C_PATH ${CMAKE_CURRENT_BINARY_DIR}/qrcode.c)
+set(DOWNLOADED_QRCODE_H_PATH ${CMAKE_CURRENT_BINARY_DIR}/qrcode.h)
+if (NOT EXISTS ${DOWNLOADED_QRCODE_C_PATH})
+	message(STATUS "Downloading QRCode library")
+	file(DOWNLOAD https://github.com/ricmoo/QRCode/raw/master/src/qrcode.c ${DOWNLOADED_QRCODE_C_PATH})
+	file(DOWNLOAD https://github.com/ricmoo/QRCode/raw/master/src/qrcode.h ${DOWNLOADED_QRCODE_H_PATH})
+	message(STATUS "Downloading QRCode library - done")
+endif()
+
 add_executable(eu-tire-label
 	${GENERATED_LABEL_EC_1222_2009}
 	${GENERATED_LABEL_EU_2020_740}
+	${DOWNLOADED_QRCODE_C_PATH}
 	${CMAKE_CURRENT_SOURCE_DIR}/src/label.c
 	${CMAKE_CURRENT_SOURCE_DIR}/src/main.c)
 

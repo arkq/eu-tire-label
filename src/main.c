@@ -60,7 +60,7 @@ void parse_label_dimensions(const char *str, int *width, int *height) {
 int main(int argc, char **argv) {
 
 	int opt;
-	const char *opts = "hVM:T:S:C:F:G:R:N:WI";
+	const char *opts = "hVU:M:T:S:C:F:G:R:N:WI";
 	struct option longopts[] = {
 		{ "help", no_argument, NULL, 'h' },
 		{ "version", no_argument, NULL, 'V' },
@@ -68,6 +68,7 @@ int main(int argc, char **argv) {
 #if ENABLE_PNG
 		{ "output-png", required_argument, NULL, 'p' },
 #endif
+		{ "eprel-url", required_argument, NULL, 'U' },
 		{ "trademark", required_argument, NULL, 'M' },
 		{ "tire-type", required_argument, NULL, 'T' },
 		{ "tire-size", required_argument, NULL, 'S' },
@@ -103,6 +104,7 @@ usage:
 					"  --output-svg                 return label in the SVG format (default)\n"
 					"  --output-png=WIDTH[xHEIGHT]  return label in the PNG format\n"
 #endif
+					"  -U, --eprel-url=URL          URL link to EPREL entry (for EU/2020/740)\n"
 					"  -M, --trademark=NAME         trademark string (for EU/2020/740)\n"
 					"  -T, --tire-type=NAME         tire type string (for EU/2020/740)\n"
 					"  -S, --tire-size=NAME         tire size designation string (for EU/2020/740)\n"
@@ -131,11 +133,14 @@ usage:
 			parse_label_dimensions(optarg, &width, &height);
 			break;
 
-		case 'M' /* --trademark=NAME */:
-			strncpy(data.trademark, optarg, sizeof(data.trademark) - 1);
-			/* If trademark was given it must mean that someone is trying to render
+		case 'U' /* --eprel-url=URL */:
+			strncpy(data.qrcode, optarg, sizeof(data.qrcode) - 1);
+			/* If EPREL URL was given it must mean that someone is trying to render
 			 * EU/2020/740 label, otherwise EC/1222/2009 label will be generated. */
 			label_EU_2020_740 = true;
+			break;
+		case 'M' /* --trademark=NAME */:
+			strncpy(data.trademark, optarg, sizeof(data.trademark) - 1);
 			break;
 		case 'T' /* --tire-type=NAME */:
 			strncpy(data.tire_type, optarg, sizeof(data.tire_type) - 1);
@@ -215,10 +220,12 @@ usage:
 				}
 #endif
 
-				if (strstr(token, "M=") == token) {
-					strncpy(data.trademark, &token[2], sizeof(data.trademark) - 1);
+				if (strstr(token, "U=") == token) {
+					strncpy(data.qrcode, &token[2], sizeof(data.qrcode) - 1);
 					label_EU_2020_740 = true;
 				}
+				else if (strstr(token, "M=") == token)
+					strncpy(data.trademark, &token[2], sizeof(data.trademark) - 1);
 				else if (strstr(token, "T=") == token)
 					strncpy(data.tire_type, &token[2], sizeof(data.tire_type) - 1);
 				else if (strstr(token, "S=") == token)

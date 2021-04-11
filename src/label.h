@@ -45,6 +45,7 @@ enum rolling_noise_class {
 };
 
 struct eu_tire_label {
+	char qrcode[64];
 	char trademark[32];
 	char tire_type[32];
 	char tire_size[32];

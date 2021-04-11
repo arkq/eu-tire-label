@@ -15,6 +15,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* downloaded QR-code library */
+#include "qrcode.h"
+
 /* auto-generated SVG templates */
 #include "label_EC_1222_2009-template.h"
 #include "label_EU_2020_740-template.h"
@@ -60,6 +63,39 @@ static char *strrep_x(char *data, const char *src, const char *dst) {
 	char *tmp = strrep(data, src, dst);
 	free(data);
 	return tmp;
+}
+
+/* Create QR code with given version and text data. Memory for QR code is
+ * allocated with malloc(3), and shall be freed with free(3). */
+static char *create_qrcode(unsigned int version, const char *text) {
+
+	const char template[] = "<use xlink:href=\"#p\" x=\"%zu\" y=\"%zu\"/>";
+	unsigned char *modules = malloc(qrcode_getBufferSize(version));
+	char *tmp, *qrcode = NULL;
+	size_t pixels = 0;
+	size_t x, y;
+	QRCode qr;
+
+	if (qrcode_initText(&qr, modules, version, ECC_LOW, text) != 0)
+		goto fail;
+
+	for (x = 0; x < qr.size; x++)
+		for (y = 0; y < qr.size; y++)
+			if (qrcode_getModule(&qr, x, y))
+				pixels++;
+
+	if ((qrcode = malloc(sizeof(template) * pixels)) == NULL)
+		goto fail;
+
+	tmp = qrcode;
+	for (x = 0; x < qr.size; x++)
+		for (y = 0; y < qr.size; y++)
+			if (qrcode_getModule(&qr, x, y))
+				tmp += sprintf(tmp, template, x, y);
+
+fail:
+	free(modules);
+	return qrcode;
 }
 
 char *create_label_EC_1222_2009(const struct eu_tire_label *data) {
@@ -122,9 +158,14 @@ char *create_label_EU_2020_740(const struct eu_tire_label *data) {
 		{ "4", "31", "51" }};  /* rolling noise + snow grip + ice grip */
 	unsigned int x = 0;
 	char db[8] = "";
+	char *qrcode;
 	char *label;
 
-	label = strrep(label_EU_2020_740_template, "[TRADEMARK]", data->trademark);
+	qrcode = create_qrcode(3 /* 29 x 29 */, data->qrcode);
+	label = strrep(label_EU_2020_740_template, "[QR-CODE]", qrcode);
+	free(qrcode);
+
+	label = strrep_x(label, "[TRADEMARK]", data->trademark);
 	label = strrep_x(label, "[TIRE-TYPE]", data->tire_type);
 	label = strrep_x(label, "[TIRE-SIZE-DESIGNATION]", data->tire_size);
 	label = strrep_x(label, "[TIRE-CLASS]", classes[data->tire_class]);
