@@ -272,8 +272,16 @@ enum rolling_noise_class parse_rolling_noise_class(const char *str) {
 	int value = atoi(str);
 
 	if (value >= 1 && value <= 3)
-		return (enum rolling_noise_class)value;
+		return value;
 
+	if (strlen(str) != 1)
+		goto fail;
+
+	value = tolower(str[0]) - 'a' + 1;
+	if (value >= 1 && value <= 3)
+		return value;
+
+fail:
 	fprintf(stderr, "warning: invalid rolling noise class: %s\n", str);
 	return RNC_NONE;
 }
@@ -287,4 +295,17 @@ unsigned int parse_rolling_noise_db(const char *str) {
 
 	fprintf(stderr, "warning: invalid rolling noise dB value: %s\n", str);
 	return 0;
+}
+
+unsigned int sanitize_plain_text(char *text) {
+
+	unsigned int rv = 0;
+	char *tmp;
+
+	while ((tmp = strstr(text, "]]>")) != NULL) {
+		tmp[1] = '|';
+		rv = 1;
+	}
+
+	return rv;
 }

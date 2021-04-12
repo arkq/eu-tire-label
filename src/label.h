@@ -69,3 +69,4 @@ enum fuel_efficiency_class parse_fuel_efficiency_class(const char *str);
 enum wet_grip_class parse_wet_grip_class(const char *str);
 enum rolling_noise_class parse_rolling_noise_class(const char *str);
 unsigned int parse_rolling_noise_db(const char *str);
+unsigned int sanitize_plain_text(char *text);

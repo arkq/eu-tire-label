@@ -136,7 +136,7 @@
 				<path d="m 21.903739,-15.711619 c 1.297069,2.99465 1.351876,5.9807833 0,9.0867028" />
 				<path d="m 23.888653,-16.88911 c 1.733912,3.727981 1.733912,7.6239433 0,11.1685138" />
 				<text x="16.5" y="-10" stroke="none" fill="black" text-anchor="end" font-size="3.175"><tspan font-size="4.233" font-weight="bold">[ROLLING-NOISE-DB]</tspan> dB</text>
-				<text x="17.5" y="0" stroke="none" fill="black" text-anchor="end" font-size="3.527"><tspan class="[ROLLING-NOISE-A]">A</tspan><tspan class="[ROLLING-NOISE-B]">B</tspan><tspan class="[ROLLING-NOISE-C]">C</tspan></text>
+				<text x="8.8" y="0" stroke="none" fill="black" font-size="3.527"><tspan class="[ROLLING-NOISE-A]">A</tspan><tspan class="[ROLLING-NOISE-B]">B</tspan><tspan class="[ROLLING-NOISE-C]">C</tspan></text>
 			</g>
 		</g>
 		<g id="snow-grip" display="[SNOW-GRIP-DISPLAY]" transform="translate([SNOW-GRIP-X],0)">

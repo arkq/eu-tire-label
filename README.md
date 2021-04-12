@@ -35,10 +35,10 @@ As a standalone executable:
 ```sh
 # EU/2020/740 labels (--eprel-url option present)
 eu-tire-label --eprel-url=http://eprel.eu/624150 --trademark=MICHELINE --tire-size="P215/65 R15" \
-    --tire-type=WINTER --tire-class=1 --fuel-efficiency=B --wet-grip=E --rolling-noise=2 \
+    --tire-type=WINTER --tire-class=1 --fuel-efficiency=B --wet-grip=E --rolling-noise=B \
     --rolling-noise-db=72 --snow-grip --ice-grip >tire-label-MICHELINE-1-B-E-2-72.svg
 eu-tire-label --eprel-url=http://eprel.eu/624150 --trademark=MICHELINE --tire-size="P215/65 R15" \
-    --tire-type=WINTER --tire-class=1 --fuel-efficiency=B --wet-grip=E --rolling-noise=2 \
+    --tire-type=WINTER --tire-class=1 --fuel-efficiency=B --wet-grip=E --rolling-noise=B \
     --rolling-noise-db=72 --snow-grip --output-png=350 >tire-label-MICHELINE-1-B-E-2-72.png
 ```
 
@@ -56,8 +56,10 @@ case insensitive.
 ```sh
 wget "http://localhost/cgi-bin/eu-tire-label?c=1&f=b&g=e&r=2&n=72"
 wget "http://localhost/cgi-bin/eu-tire-label?c=1&f=b&g=e&r=2&n=72&png=350"
+wget "http://localhost/cgi-bin/eu-tire-label?u=http://eprel.eu/624150&m=MICHELINEs=P215/65+R15&t=WINTER&c=1&f=b&g=e&r=b&n=72&w&i"
 ```
 
 ## Examples
 
-![EU/2020/740](example/tire-label-EU-2020-740.png) ![EC/1222/2009](example/tire-label-EC-1222-2009.png)
+![EU/2020/740](example/tire-label-EU-2020-740.png)
+![EC/1222/2009](example/tire-label-EC-1222-2009.png)

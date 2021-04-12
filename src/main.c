@@ -8,6 +8,7 @@
  *
  */
 
+#define _GNU_SOURCE
 #include <ctype.h>
 #include <getopt.h>
 #include <stdbool.h>
@@ -56,6 +57,39 @@ void parse_label_dimensions(const char *str, int *width, int *height) {
 	free(tmp);
 }
 
+/* Decode URL-encoded string. Memory for decoded string is allocated with
+ * malloc(3), and shall be freed with free(3). */
+static char *urldecode(const char *str) {
+
+	size_t len = strlen(str);
+	char *decoded = malloc(len + 1);
+	char *p = decoded;
+	unsigned int ch;
+	size_t i;
+
+	for (i = 0; i < len; i++)
+		switch (str[i]) {
+		case '+':
+			*p++ = ' ';
+			break;
+		case '%':
+			if (i + 2 < len &&
+					isxdigit(str[i + 1]) &&
+					isxdigit(str[i + 2])) {
+				sscanf(&str[i + 1], "%02x", &ch);
+				*p++ = ch;
+				i += 2;
+				break;
+			}
+			/* fall-through */
+		default:
+			*p++ = str[i];
+			break;
+		}
+
+	*p = '\0';
+	return decoded;
+}
 
 int main(int argc, char **argv) {
 
@@ -113,8 +147,8 @@ usage:
 					"                               letter format; allowed values: 1-7 or A-G\n"
 					"  -G, --wet-grip=CLASS         wet grip class in the numerical or letter\n"
 					"                               format; allowed values: 1-7 or A-G\n"
-					"  -R, --rolling-noise=CLASS    external rolling noise class value;\n"
-					"                               one of: 1, 2 or 3\n"
+					"  -R, --rolling-noise=CLASS    external rolling noise class in the numerical\n"
+					"                               or letter format; allowed values: 1-3 or A-C\n"
 					"  -N, --rolling-noise-db=DB    external rolling noise value expressed in dB\n"
 					"  -W, --snow-grip              show snow grip pictogram (for EU/2020/740)\n"
 					"  -I, --ice-grip               show ice grip pictogram (for EU/2020/740)\n",
@@ -201,50 +235,47 @@ usage:
 				return EXIT_FAILURE;
 			}
 
-			/* make query string case-insensitive */
-			char *ptr = query;
-			while ((*ptr = toupper(*ptr)) != '\0')
-				ptr++;
-
 			char *str = query;
 			char *token;
 
 			/* dissect and parse query string */
 			while ((token = strtok(str, "&")) != NULL) {
+				char *tmp = NULL;
 				str = NULL;
 
 #if ENABLE_PNG
-				if (strstr(token, "PNG=") == token) {
+				if (strcasestr(token, "PNG=") == token) {
 					format = FORMAT_PNG;
 					parse_label_dimensions(&token[4], &width, &height);
 				}
 #endif
 
-				if (strstr(token, "U=") == token) {
-					strncpy(data.qrcode, &token[2], sizeof(data.qrcode) - 1);
+				if (strcasestr(token, "U=") == token) {
+					strncpy(data.qrcode, tmp = urldecode(&token[2]), sizeof(data.qrcode) - 1);
 					label_EU_2020_740 = true;
 				}
-				else if (strstr(token, "M=") == token)
-					strncpy(data.trademark, &token[2], sizeof(data.trademark) - 1);
-				else if (strstr(token, "T=") == token)
-					strncpy(data.tire_type, &token[2], sizeof(data.tire_type) - 1);
-				else if (strstr(token, "S=") == token)
-					strncpy(data.tire_size, &token[2], sizeof(data.tire_size) - 1);
-				else if (strstr(token, "C=") == token)
+				else if (strcasestr(token, "M=") == token)
+					strncpy(data.trademark, tmp = urldecode(&token[2]), sizeof(data.trademark) - 1);
+				else if (strcasestr(token, "T=") == token)
+					strncpy(data.tire_type, tmp = urldecode(&token[2]), sizeof(data.tire_type) - 1);
+				else if (strcasestr(token, "S=") == token)
+					strncpy(data.tire_size, tmp = urldecode(&token[2]), sizeof(data.tire_size) - 1);
+				else if (strcasestr(token, "C=") == token)
 					data.tire_class = parse_tire_class(&token[2]);
-				else if (strstr(token, "F=") == token)
+				else if (strcasestr(token, "F=") == token)
 					data.fuel_efficiency = parse_fuel_efficiency_class(&token[2]);
-				else if (strstr(token, "G=") == token)
+				else if (strcasestr(token, "G=") == token)
 					data.wet_grip = parse_wet_grip_class(&token[2]);
-				else if (strstr(token, "R=") == token)
+				else if (strcasestr(token, "R=") == token)
 					data.rolling_noise = parse_rolling_noise_class(&token[2]);
-				else if (strstr(token, "N=") == token)
+				else if (strcasestr(token, "N=") == token)
 					data.rolling_noise_db = parse_rolling_noise_db(&token[2]);
-				else if (strstr(token, "W") == token)
+				else if (strcasestr(token, "W") == token)
 					data.snow_grip = 1;
-				else if (strstr(token, "I") == token)
+				else if (strcasestr(token, "I") == token)
 					data.ice_grip = 1;
 
+				free(tmp);
 			}
 
 			free(query);
@@ -261,6 +292,13 @@ usage:
 #endif
 		return EXIT_FAILURE;
 	}
+
+	if (sanitize_plain_text(data.trademark) != 0)
+		fprintf(stderr, "warning: found CDATA end sequence \"]]>\" in trademark string\n");
+	if (sanitize_plain_text(data.tire_type) != 0)
+		fprintf(stderr, "warning: found CDATA end sequence \"]]>\" in tire type string\n");
+	if (sanitize_plain_text(data.tire_size) != 0)
+		fprintf(stderr, "warning: found CDATA end sequence \"]]>\" in tire size string\n");
 
 	if (label_EU_2020_740)
 		label = create_label_EU_2020_740(&data);
