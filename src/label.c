@@ -69,29 +69,38 @@ static char *strrep_x(char *data, const char *src, const char *dst) {
  * allocated with malloc(3), and shall be freed with free(3). */
 static char *create_qrcode(unsigned int version, const char *text) {
 
-	const char template[] = "<use xlink:href=\"#p\" x=\"%zu\" y=\"%zu\"/>";
+	const char template[] = "M%zu,%zuh1v%zuh-1z";
 	unsigned char *modules = malloc(qrcode_getBufferSize(version));
-	char *tmp, *qrcode = NULL;
-	size_t pixels = 0;
+	char *p, *qrcode = NULL;
 	size_t x, y;
 	QRCode qr;
 
 	if (qrcode_initText(&qr, modules, version, ECC_LOW, text) != 0)
 		goto fail;
 
-	for (x = 0; x < qr.size; x++)
-		for (y = 0; y < qr.size; y++)
-			if (qrcode_getModule(&qr, x, y))
-				pixels++;
-
-	if ((qrcode = malloc(sizeof(template) * pixels)) == NULL)
+	/* The worst case scenario is that the QR code is half empty, so the
+	 * total max number of rectangles is: qr.size * qr.size / 2. */
+	if ((qrcode = p = malloc(sizeof(template) * qr.size * qr.size / 2)) == NULL)
 		goto fail;
 
-	tmp = qrcode;
-	for (x = 0; x < qr.size; x++)
-		for (y = 0; y < qr.size; y++)
-			if (qrcode_getModule(&qr, x, y))
-				tmp += sprintf(tmp, template, x, y);
+	p += sprintf(p, "<path d=\"");
+
+	for (x = 0; x < qr.size; x++) {
+		size_t start = 0, length = 0;
+		for (y = 0; y < qr.size; y++) {
+			bool ok = qrcode_getModule(&qr, x, y);
+			if (ok && length == 0)
+				start = y;
+			if (ok)
+				length++;
+			if (length != 0 && (!ok || y + 1 == qr.size)) {
+				p += sprintf(p, template, x, start, length);
+				length = 0;
+			}
+		}
+	}
+
+	p += sprintf(p, "\"/>");
 
 fail:
 	free(modules);
