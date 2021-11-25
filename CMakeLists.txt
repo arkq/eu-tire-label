@@ -47,6 +47,9 @@ add_executable(eu-tire-label
 	${CMAKE_CURRENT_SOURCE_DIR}/src/label.c
 	${CMAKE_CURRENT_SOURCE_DIR}/src/main.c)
 
+set_target_properties(eu-tire-label
+	PROPERTIES C_STANDARD 99)
+
 target_include_directories(eu-tire-label
 	PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 

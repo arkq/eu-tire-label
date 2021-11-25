@@ -22,7 +22,8 @@
 #include "label_EC_1222_2009-template.h"
 #include "label_EU_2020_740-template.h"
 
-/* Replace every occurrence of src in the data with dst. Memory for the new
+/**
+ * Replace every occurrence of src in the data with dst. Memory for the new
  * string is obtained with malloc(3), and can be freed with free(3). */
 static char *strrep(const char *data, const char *src, const char *dst) {
 
@@ -56,7 +57,8 @@ static char *strrep(const char *data, const char *src, const char *dst) {
 	return newdata;
 }
 
-/* Helper function related to the strrep which frees passed source memory.
+/**
+ * Helper function related to the strrep which frees passed source memory.
  * Note, that the passed source string HAS TO be allocated with malloc(3)
  * functions family. */
 static char *strrep_x(char *data, const char *src, const char *dst) {
@@ -65,7 +67,8 @@ static char *strrep_x(char *data, const char *src, const char *dst) {
 	return tmp;
 }
 
-/* Create QR code with given version and text data. Memory for QR code is
+/**
+ * Create QR code with given version and text data. Memory for QR code is
  * allocated with malloc(3), and shall be freed with free(3). */
 static char *create_qrcode(unsigned int version, const char *text) {
 
@@ -107,16 +110,57 @@ fail:
 	return qrcode;
 }
 
+/**
+ * Encode string according to the HTML URL encoding specification. Memory
+ * for encoded string is allocated with malloc(3), and shall be freed with
+ * free(3). */
+static char *urlencode(const char *text) {
+
+	char *encoded = NULL;
+	size_t encode_count = 0;
+	const char *p;
+
+	/* count characters which shall be encoded */
+	for (p = text; *p != '\0'; p++)
+		if (*p == '%' || *p == '"')
+			encode_count++;
+
+	if ((encoded = malloc(strlen(text) + encode_count * 2 + 1)) == NULL)
+		goto fail;
+
+	char *d = encoded;
+	for (p = text; *p != '\0'; p++)
+		switch (*p) {
+		case '%':
+			memcpy(d, "%25", 3);
+			d += 3;
+			break;
+		case '"':
+			memcpy(d, "%22", 3);
+			d += 3;
+			break;
+		default:
+			*d = *p;
+			d += 1;
+		}
+	*d = '\0';
+
+fail:
+	return encoded;
+}
+
 char *create_label_EC_1222_2009(const struct eu_tire_label *data) {
 
 	static const char *classes[] = { "", "C1", "C2", "C3" };
 	static const char *display[] = { "none", "", "", "", "", "", "", "" };
 	static const char *letters[] = { "", "A", "B", "C", "D", "E", "F", "G" };
 	static const char *y[] = { "0", "24.375", "29.875", "35.375", "40.875", "46.375", "51.875", "58.375" };
-	char db[8] = "";
+	char db[16] = "";
 	char *label;
 
-	label = strrep(label_EC_1222_2009_template, "[TIRE-CLASS]", classes[data->tire_class]);
+	label = strrep(label_EC_1222_2009_template, "[TITLE]", data->title);
+
+	label = strrep_x(label, "[TIRE-CLASS]", classes[data->tire_class]);
 
 	label = strrep_x(label, "[FUEL-EFFICIENCY-DISPLAY]", display[data->fuel_efficiency]);
 	label = strrep_x(label, "[FUEL-EFFICIENCY-Y]", y[data->fuel_efficiency]);
@@ -166,12 +210,18 @@ char *create_label_EU_2020_740(const struct eu_tire_label *data) {
 		{ "0", "20", "40" },   /* snow grip + ice grip */
 		{ "4", "31", "51" }};  /* rolling noise + snow grip + ice grip */
 	unsigned int x = 0;
-	char db[8] = "";
+	char db[16] = "";
+	char *qrcode_url;
 	char *qrcode;
 	char *label;
 
+	label = strrep(label_EU_2020_740_template, "[TITLE]", data->title);
+
+	qrcode_url = urlencode(data->qrcode);
 	qrcode = create_qrcode(3 /* 29 x 29 */, data->qrcode);
-	label = strrep(label_EU_2020_740_template, "[QR-CODE]", qrcode);
+	label = strrep_x(label, "[QR-CODE-HREF]", qrcode_url);
+	label = strrep_x(label, "[QR-CODE]", qrcode);
+	free(qrcode_url);
 	free(qrcode);
 
 	label = strrep_x(label, "[TRADEMARK]", data->trademark);

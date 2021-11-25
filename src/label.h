@@ -8,6 +8,10 @@
  *
  */
 
+#pragma once
+#ifndef EUTIRELABEL_LABEL_H_
+#define EUTIRELABEL_LABEL_H_
+
 enum tire_class {
 	TC_ERROR = 0,
 	TC_C1,
@@ -45,6 +49,7 @@ enum rolling_noise_class {
 };
 
 struct eu_tire_label {
+	char title[128];
 	char qrcode[64];
 	char trademark[32];
 	char tire_type[32];
@@ -70,3 +75,5 @@ enum wet_grip_class parse_wet_grip_class(const char *str);
 enum rolling_noise_class parse_rolling_noise_class(const char *str);
 unsigned int parse_rolling_noise_db(const char *str);
 unsigned int sanitize_plain_text(char *text);
+
+#endif

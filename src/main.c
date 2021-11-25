@@ -102,6 +102,7 @@ int main(int argc, char **argv) {
 #if ENABLE_PNG
 		{ "output-png", required_argument, NULL, 'p' },
 #endif
+		{ "svg-title", required_argument, NULL, 't' },
 		{ "eprel-url", required_argument, NULL, 'U' },
 		{ "trademark", required_argument, NULL, 'M' },
 		{ "tire-type", required_argument, NULL, 'T' },
@@ -138,6 +139,7 @@ usage:
 					"  --output-svg                 return label in the SVG format (default)\n"
 					"  --output-png=WIDTH[xHEIGHT]  return label in the PNG format\n"
 #endif
+					"  --svg-title=TEXT             tire label SVG image title\n"
 					"  -U, --eprel-url=URL          URL link to EPREL entry (for EU/2020/740)\n"
 					"  -M, --trademark=NAME         trademark string (for EU/2020/740)\n"
 					"  -T, --tire-type=NAME         tire type string (for EU/2020/740)\n"
@@ -165,6 +167,9 @@ usage:
 		case 'p' /* --output-png=WIDTH[xHEIGHT] */:
 			format = FORMAT_PNG;
 			parse_label_dimensions(optarg, &width, &height);
+			break;
+		case 't' /* --svg-title=TEXT */:
+			strncpy(data.title, optarg, sizeof(data.title) - 1);
 			break;
 
 		case 'U' /* --eprel-url=URL */:
@@ -293,6 +298,8 @@ usage:
 		return EXIT_FAILURE;
 	}
 
+	if (sanitize_plain_text(data.title) != 0)
+		fprintf(stderr, "warning: found CDATA end sequence \"]]>\" in SVG title string\n");
 	if (sanitize_plain_text(data.trademark) != 0)
 		fprintf(stderr, "warning: found CDATA end sequence \"]]>\" in trademark string\n");
 	if (sanitize_plain_text(data.tire_type) != 0)

@@ -8,6 +8,10 @@
  *
  */
 
+#pragma once
+#ifndef EUTIRELABEL_RASTER_H_
+#define EUTIRELABEL_RASTER_H_
+
 #include <stddef.h>
 
 struct raster_png {
@@ -17,3 +21,5 @@ struct raster_png {
 
 struct raster_png *raster_svg_to_png(const char *svg, int width, int height);
 void raster_png_free(struct raster_png *png);
+
+#endif
